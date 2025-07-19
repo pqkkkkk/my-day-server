@@ -1,6 +1,6 @@
-package org.pqkkkkk.my_day_server.service;
+package org.pqkkkkk.my_day_server.task.service;
 
-import org.pqkkkkk.my_day_server.entity.List;
+import org.pqkkkkk.my_day_server.task.entity.List;
 
 public interface ListService {
     public List createList(List list);

@@ -1,7 +1,7 @@
-package org.pqkkkkk.my_day_server.service;
+package org.pqkkkkk.my_day_server.task.service;
 
 
-import org.pqkkkkk.my_day_server.entity.Task;
+import org.pqkkkkk.my_day_server.task.entity.Task;
 
 public interface TaskService {
     public Task createTask(Task task);

@@ -1,8 +1,9 @@
-package org.pqkkkkk.my_day_server;
+package org.pqkkkkk.my_day_server.task;
 
 public class Constants {
     public enum ListCategory {
         WORK ("Công việc"),
+        STUDY("Việc học"),
         PERSONAL ("Cá nhân"),
         OTHER ("Khác");
 

@@ -1,10 +1,10 @@
-package org.pqkkkkk.my_day_server.service;
+package org.pqkkkkk.my_day_server.task.service;
 
 import java.util.List;
 
-import org.pqkkkkk.my_day_server.dto.PageResult;
-import org.pqkkkkk.my_day_server.dto.TaskAggregation;
-import org.pqkkkkk.my_day_server.dto.FilterObject.TaskFilterObject;
+import org.pqkkkkk.my_day_server.task.dto.PageResult;
+import org.pqkkkkk.my_day_server.task.dto.TaskAggregation;
+import org.pqkkkkk.my_day_server.task.dto.FilterObject.TaskFilterObject;
 
 public interface TaskAggregationService {
     public PageResult<TaskAggregation> getTasks(

@@ -1,4 +1,4 @@
-package org.pqkkkkk.my_day_server.entity;
+package org.pqkkkkk.my_day_server.task.entity;
 
 import java.util.Date;
 

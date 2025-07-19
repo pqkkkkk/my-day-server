@@ -1,12 +1,12 @@
-package org.pqkkkkk.my_day_server.dto;
+package org.pqkkkkk.my_day_server.task.dto;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.pqkkkkk.my_day_server.Constants.ListCategory;
-import org.pqkkkkk.my_day_server.Constants.SortDirection;
-import org.pqkkkkk.my_day_server.Constants.TaskPriority;
-import org.pqkkkkk.my_day_server.Constants.TaskStatus;
+import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
+import org.pqkkkkk.my_day_server.task.Constants.SortDirection;
+import org.pqkkkkk.my_day_server.task.Constants.TaskPriority;
+import org.pqkkkkk.my_day_server.task.Constants.TaskStatus;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;

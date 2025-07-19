@@ -1,8 +1,8 @@
-package org.pqkkkkk.my_day_server.entity;
+package org.pqkkkkk.my_day_server.task.entity;
 
 import java.util.Date;
 
-import org.pqkkkkk.my_day_server.Constants.ListCategory;
+import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

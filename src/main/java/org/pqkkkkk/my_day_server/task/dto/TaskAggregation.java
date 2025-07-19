@@ -1,8 +1,10 @@
-package org.pqkkkkk.my_day_server.dto;
+package org.pqkkkkk.my_day_server.task.dto;
 
 import java.util.Collections;
 
-import org.pqkkkkk.my_day_server.entity.List;
+import org.pqkkkkk.my_day_server.task.entity.List;
+import org.pqkkkkk.my_day_server.task.entity.Step;
+import org.pqkkkkk.my_day_server.task.entity.Task;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,9 +17,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class ListAggregation {
+public class TaskAggregation {
     List list;
-
+    Task task;
     @Builder.Default
-    java.util.List<TaskAggregation> tasks = Collections.emptyList();
+    java.util.List<Step> steps = Collections.emptyList();
 }

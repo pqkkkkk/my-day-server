@@ -1,4 +1,4 @@
-package org.pqkkkkk.my_day_server.dto;
+package org.pqkkkkk.my_day_server.task.dto;
 
 import java.util.List;
 

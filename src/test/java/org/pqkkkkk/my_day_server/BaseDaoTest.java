@@ -5,8 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pqkkkkk.my_day_server.dao.BaseDao;
-import org.pqkkkkk.my_day_server.entity.Column;
+import org.pqkkkkk.my_day_server.common.BaseDao;
+import org.pqkkkkk.my_day_server.task.entity.Column;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;

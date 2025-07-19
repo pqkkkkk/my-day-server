@@ -1,11 +1,11 @@
-package org.pqkkkkk.my_day_server.dao;
+package org.pqkkkkk.my_day_server.common;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.pqkkkkk.my_day_server.entity.Column;
+import org.pqkkkkk.my_day_server.task.entity.Column;
 
 
 /* Utility methods for SQL reflection 

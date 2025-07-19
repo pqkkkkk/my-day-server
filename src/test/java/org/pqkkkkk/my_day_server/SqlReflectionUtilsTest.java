@@ -2,8 +2,8 @@ package org.pqkkkkk.my_day_server;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.pqkkkkk.my_day_server.dao.SqlReflectionUtils;
-import org.pqkkkkk.my_day_server.entity.Column;
+import org.pqkkkkk.my_day_server.common.SqlReflectionUtils;
+import org.pqkkkkk.my_day_server.task.entity.Column;
 
 import java.util.HashMap;
 import java.util.Map;

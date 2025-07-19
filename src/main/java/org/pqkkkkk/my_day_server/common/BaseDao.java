@@ -1,4 +1,4 @@
-package org.pqkkkkk.my_day_server.dao;
+package org.pqkkkkk.my_day_server.common;
 
 import java.util.Map;
 

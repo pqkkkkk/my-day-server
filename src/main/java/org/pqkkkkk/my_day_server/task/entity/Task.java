@@ -1,9 +1,9 @@
-package org.pqkkkkk.my_day_server.entity;
+package org.pqkkkkk.my_day_server.task.entity;
 
 import java.util.Date;
 
-import org.pqkkkkk.my_day_server.Constants.TaskPriority;
-import org.pqkkkkk.my_day_server.Constants.TaskStatus;
+import org.pqkkkkk.my_day_server.task.Constants.TaskPriority;
+import org.pqkkkkk.my_day_server.task.Constants.TaskStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
