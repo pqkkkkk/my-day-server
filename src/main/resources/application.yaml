@@ -1,0 +1,8 @@
+spring:
+    application:
+        name: my-day-server
+    datasource:
+        url: jdbc:postgresql://localhost:5432/my_day_db
+        username: postgres
+        password: pqkiet854
+        driver-class-name: org.postgresql.Driver
