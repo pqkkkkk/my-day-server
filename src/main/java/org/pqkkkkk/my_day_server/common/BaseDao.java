@@ -2,6 +2,8 @@ package org.pqkkkkk.my_day_server.common;
 
 import java.util.Map;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 public abstract class BaseDao<T> {
@@ -19,7 +21,7 @@ public abstract class BaseDao<T> {
 
         return jdbcTemplate.update(sql, paramMap);
     }
-    /*
+    /**
      * This method is used to update an entity in the database.
      * It takes an entity and a where clause as parameters.
      * The where clause is used to specify which record(s) to update.
@@ -30,7 +32,7 @@ public abstract class BaseDao<T> {
 
         return jdbcTemplate.update(sql, paramMap);
     }
-    /*
+    /**
      * This method is a convenience method for updating an entity by its primary key.
      */
     protected Integer update(T entity){
@@ -43,5 +45,13 @@ public abstract class BaseDao<T> {
         String whereClause = primaryKeyName + " = :" + primaryKeyName;
 
         return update(entity, whereClause);
+    }
+    protected T queryForObject(String sql, Map<String, Object> params, Class<T> clazz) {
+        try{
+        return jdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(clazz));
+        }
+        catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }
