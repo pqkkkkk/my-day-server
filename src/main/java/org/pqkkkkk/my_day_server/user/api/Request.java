@@ -10,4 +10,9 @@ public class Request {
         @NotBlank
         String password) {
     }
+
+    public record RefreshTokenRequest(
+        @NotBlank
+        String refreshToken) {
+    }
 }

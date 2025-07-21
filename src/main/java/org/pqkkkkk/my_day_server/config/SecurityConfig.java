@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     @Value("${jwt.signer-key}")
-    private String signerKey;
+    private String SIGNER_KEY;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -53,7 +53,7 @@ public class SecurityConfig {
     }
     @Bean
     JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
         return NimbusJwtDecoder.withSecretKey(secretKeySpec)
                                 .macAlgorithm(MacAlgorithm.HS512)
                                 .build();
