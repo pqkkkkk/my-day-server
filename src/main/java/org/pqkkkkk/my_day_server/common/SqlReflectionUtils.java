@@ -22,6 +22,26 @@ public class SqlReflectionUtils {
         }
         return null; // No primary key found
     }
+    public static Object getPrimaryKeyValue(Object entity) {
+        if (entity == null) {
+            return null; // Handle null entity case
+        }
+        Field[] fields = entity.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            Column columnAnnotation = field.getAnnotation(Column.class);
+            if (columnAnnotation != null && columnAnnotation.isPrimaryKey()) {
+
+                try{
+                    field.setAccessible(true);
+                    return field.get(entity);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Failed to access primary key field: " + field.getName(), e);
+                }
+            }
+        }
+        return null; // No primary key found
+    }
     public static Map<String, Object> entityToMap(Object entity){
         Map<String, Object> res = new HashMap<>();
         Field[] fields = entity.getClass().getDeclaredFields();

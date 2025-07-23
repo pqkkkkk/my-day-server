@@ -41,7 +41,10 @@ public class FilterObject {
         @Future(message = "Created At To date must be in the future")
         Optional<LocalDate> createdAtTo
     ) {
-        // You can add any additional methods or logic here if needed
+        public ListFilterObject{
+            currentPage = currentPage != null ? currentPage : 1;
+            pageSize = pageSize != null ? pageSize : 10;
+        }
     }
 
     public record TaskFilterObject(
@@ -73,7 +76,10 @@ public class FilterObject {
         @Future(message = "Created At To date must be in the future")
         Optional<LocalDate> createdAtTo
     ) {
-        // You can add any additional methods or logic here if needed
+        public TaskFilterObject{
+            currentPage = currentPage != null ? currentPage : 1;
+            pageSize = pageSize != null ? pageSize : 10;
+        }
     }
 
 }

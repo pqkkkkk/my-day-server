@@ -9,6 +9,9 @@ import org.pqkkkkk.my_day_server.common.BaseDao;
 import org.pqkkkkk.my_day_server.task.entity.Column;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -92,12 +95,16 @@ public class BaseDaoTest {
             return super.insert(entity);
         }
         
-        public Integer publicUpdate(TestEntity entity, String whereClause) {
-            return super.update(entity, whereClause);
+        public Integer publicUpdate(TestEntity entity, String whereClause, Map<String, Object> whereParams) {
+            return super.update(entity, whereClause, whereParams);
         }
         
         public Integer publicUpdate(TestEntity entity) {
             return super.update(entity);
+        }
+        
+        public Integer publicDelete(TestEntity entity) {
+            return super.delete(entity);
         }
     }
 
@@ -109,6 +116,10 @@ public class BaseDaoTest {
         
         public Integer publicUpdate(TestEntityNoPrimaryKey entity) {
             return super.update(entity);
+        }
+        
+        public Integer publicDelete(TestEntityNoPrimaryKey entity) {
+            return super.delete(entity);
         }
     }
 
@@ -177,17 +188,20 @@ public class BaseDaoTest {
         );
     }
 
-    // ========== Tests cho update(entity, whereClause) method ==========
+    // ========== Tests cho update(entity, whereClause, whereParams) method ==========
 
     @Test
-    void testUpdateWithWhereClause_Success() {
+    void testUpdateWithWhereClauseAndParams_Success() {
         // Arrange
         TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
-        String whereClause = "user_id = :user_id";
+        String whereClause = "user_id = :userId AND status = :status";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("userId", 1L);
+        whereParams.put("status", "active");
         when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
 
         // Act
-        Integer result = testBaseDao.publicUpdate(entity, whereClause);
+        Integer result = testBaseDao.publicUpdate(entity, whereClause, whereParams);
 
         // Assert
         assertEquals(1, result, "Update should return 1 for successful update");
@@ -195,14 +209,16 @@ public class BaseDaoTest {
     }
 
     @Test
-    void testUpdateWithWhereClause_NoRowsAffected() {
+    void testUpdateWithWhereClauseAndParams_NoRowsAffected() {
         // Arrange
         TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
-        String whereClause = "user_id = :user_id";
+        String whereClause = "user_id = :userId";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("userId", 999L); // Non-existent ID
         when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(0);
 
         // Act
-        Integer result = testBaseDao.publicUpdate(entity, whereClause);
+        Integer result = testBaseDao.publicUpdate(entity, whereClause, whereParams);
 
         // Assert
         assertEquals(0, result, "Update should return 0 when no rows affected");
@@ -210,36 +226,77 @@ public class BaseDaoTest {
     }
 
     @Test
-    void testUpdateWithWhereClause_ComplexWhereClause() {
+    // Chưa hợp lý
+    void testUpdateWithWhereClauseAndParams_NullWhereParams() {
         // Arrange
         TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
-        String whereClause = "user_id = :user_id AND status = 'active'";
+        String whereClause = "user_id = :user_id"; // Using field from entity
         when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
 
         // Act
-        Integer result = testBaseDao.publicUpdate(entity, whereClause);
+        Integer result = testBaseDao.publicUpdate(entity, whereClause, null);
 
         // Assert
-        assertEquals(1, result, "Update should handle complex WHERE clause");
+        assertEquals(1, result, "Update should work with null whereParams");
+        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testUpdateWithWhereClauseAndParams_ComplexWhereClause() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
+        String whereClause = "user_id = :userId AND created_date BETWEEN :startDate AND :endDate";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("userId", 1L);
+        whereParams.put("startDate", "2023-01-01");
+        whereParams.put("endDate", "2023-12-31");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        Integer result = testBaseDao.publicUpdate(entity, whereClause, whereParams);
+
+        // Assert
+        assertEquals(1, result, "Update should handle complex WHERE clause with multiple parameters");
         verify(jdbcTemplate).update(
-            argThat(sql -> sql.contains("WHERE user_id = :user_id AND status = 'active'")),
+            argThat(sql -> sql.contains("WHERE user_id = :userId AND created_date BETWEEN :startDate AND :endDate")),
             anyMap()
         );
     }
 
     @Test
-    void testUpdateWithWhereClause_VerifySQL() {
+    void testUpdateWithWhereClauseAndParams_VerifyParameterMerging() {
         // Arrange
         TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
-        String whereClause = "user_id = :user_id";
+        String whereClause = "status = :status";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("status", "active");
         when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
 
         // Act
-        testBaseDao.publicUpdate(entity, whereClause);
+        testBaseDao.publicUpdate(entity, whereClause, whereParams);
 
-        // Assert - verify SQL query structure
+        // Assert - verify SQL contains both entity fields and where params
         verify(jdbcTemplate).update(
-            argThat(sql -> sql.startsWith("UPDATE users SET") && sql.contains("WHERE user_id = :user_id")),
+            argThat(sql -> sql.contains("SET") && sql.contains("WHERE status = :status")),
+            anyMap()
+        );
+    }
+
+    @Test
+    void testUpdateWithWhereClauseAndParams_ParameterOverride() {
+        // Arrange - test case where whereParams overrides entity field
+        TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
+        String whereClause = "user_id = :user_id"; // Same parameter name as entity field
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("user_id", 2L); // Different value from entity
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        testBaseDao.publicUpdate(entity, whereClause, whereParams);
+
+        // Assert - verify that update is called with merged parameters
+        verify(jdbcTemplate).update(
+            argThat(sql -> sql.contains("WHERE user_id = :user_id")),
             anyMap()
         );
     }
@@ -281,14 +338,16 @@ public class BaseDaoTest {
     void testUpdateByPrimaryKey_NullPrimaryKeyValue() {
         // Arrange
         TestEntity entity = new TestEntity(null, "John Updated", "john.updated@example.com", "2023-01-01");
-        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(0);
 
-        // Act
-        Integer result = testBaseDao.publicUpdate(entity);
-
-        // Assert
-        assertEquals(0, result, "Update with null primary key should return 0");
-        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> testBaseDao.publicUpdate(entity),
+            "Should throw IllegalArgumentException when primary key value is null"
+        );
+        
+        assertEquals("Primary key value cannot be null.", exception.getMessage());
+        verify(jdbcTemplate, never()).update(anyString(), anyMap());
     }
 
     @Test
@@ -307,13 +366,211 @@ public class BaseDaoTest {
                 return sql.contains("WHERE user_id = :user_id") &&
                        sql.startsWith("UPDATE users SET") &&
                        sql.contains("user_name = :user_name") &&
-                       sql.contains("user_email = :user_email");
+                       sql.contains("user_email = :user_email") &&
+                       !sql.contains("user_id = :user_id,"); // Primary key should not be in SET clause
             }),
             anyMap()
         );
     }
 
-    // ========== Integration Tests ==========
+    @Test
+    void testUpdateByPrimaryKey_PrimaryKeyNotInSetClause() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        testBaseDao.publicUpdate(entity);
+
+        // Assert - verify primary key is NOT in SET clause but IS in WHERE clause
+        verify(jdbcTemplate).update(
+            argThat(sql -> {
+                String[] parts = sql.split("WHERE");
+                String setClause = parts[0];
+                String whereClause = parts.length > 1 ? parts[1] : "";
+                
+                return !setClause.contains("user_id =") &&        // Primary key should NOT be in SET
+                       whereClause.contains("user_id = :user_id"); // Primary key should be in WHERE
+            }),
+            anyMap()
+        );
+    }
+
+    @Test
+    void testUpdateByPrimaryKey_VerifyParameterSeparation() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        testBaseDao.publicUpdate(entity);
+
+        // Assert - verify SQL structure is correct
+        verify(jdbcTemplate).update(
+            argThat(sql -> {
+                // Should have SET clause with non-primary fields
+                boolean hasCorrectSetClause = sql.contains("SET") &&
+                                            sql.contains("user_name = :user_name") &&
+                                            sql.contains("user_email = :user_email") &&
+                                            !sql.contains("SET user_id =") &&        // Primary key should NOT be in SET
+                                            !sql.contains("created_at = :created_at"); // Non-insertable should be excluded
+                
+                // Should have WHERE clause with primary key
+                boolean hasCorrectWhereClause = sql.contains("WHERE user_id = :user_id");
+                
+                return hasCorrectSetClause && hasCorrectWhereClause;
+            }),
+            anyMap()
+        );
+    }
+
+    // ========== Tests cho delete(entity) method ==========
+
+    @Test
+    void testDelete_Success() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Doe", "john@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        Integer result = testBaseDao.publicDelete(entity);
+
+        // Assert
+        assertEquals(1, result, "Delete should return 1 for successful deletion");
+        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testDelete_NoRowsAffected() {
+        // Arrange
+        TestEntity entity = new TestEntity(999L, "Non-existent", "non@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(0);
+
+        // Act
+        Integer result = testBaseDao.publicDelete(entity);
+
+        // Assert
+        assertEquals(0, result, "Delete should return 0 when no rows affected");
+        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testDelete_NoPrimaryKeyDefined() {
+        // Arrange
+        TestEntityNoPrimaryKey entity = new TestEntityNoPrimaryKey("test", "value");
+        TestBaseDaoNoPK daoNoPK = new TestBaseDaoNoPK(jdbcTemplate, "test_table");
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> daoNoPK.publicDelete(entity),
+            "Should throw IllegalArgumentException when entity has no primary key"
+        );
+        
+        assertEquals("Entity does not have a primary key defined.", exception.getMessage());
+        verify(jdbcTemplate, never()).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testDelete_NullPrimaryKeyValue() {
+        // Arrange
+        TestEntity entity = new TestEntity(null, "John Doe", "john@example.com", "2023-01-01");
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> testBaseDao.publicDelete(entity),
+            "Should throw IllegalArgumentException when primary key value is null"
+        );
+        
+        assertEquals("Primary key value cannot be null.", exception.getMessage());
+        verify(jdbcTemplate, never()).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testDelete_VerifySQL() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Doe", "john@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        testBaseDao.publicDelete(entity);
+
+        // Assert - verify DELETE SQL query structure
+        verify(jdbcTemplate).update(
+            argThat(sql -> {
+                return sql.equals("DELETE FROM users WHERE user_id = :user_id");
+            }),
+            anyMap()
+        );
+    }
+
+    @Test
+    void testDelete_VerifyParameters() {
+        // Arrange
+        TestEntity entity = new TestEntity(123L, "John Doe", "john@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        testBaseDao.publicDelete(entity);
+
+        // Assert - verify correct SQL and that parameters are passed
+        verify(jdbcTemplate).update(
+            eq("DELETE FROM users WHERE user_id = :user_id"),
+            anyMap()
+        );
+    }
+
+    @Test
+    void testDelete_DifferentTableName() {
+        // Arrange
+        TestBaseDao customDao = new TestBaseDao(jdbcTemplate, "products");
+        TestEntity entity = new TestEntity(1L, "Product", "product@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        customDao.publicDelete(entity);
+
+        // Assert - verify correct table name in DELETE query
+        verify(jdbcTemplate).update(
+            eq("DELETE FROM products WHERE user_id = :user_id"),
+            anyMap()
+        );
+    }
+
+    @Test
+    void testDelete_SQLError() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Doe", "john@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenThrow(new RuntimeException("SQL Error"));
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> testBaseDao.publicDelete(entity));
+        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testDelete_MultipleEntitiesWithDifferentIds() {
+        // Arrange
+        TestEntity entity1 = new TestEntity(1L, "John", "john@example.com", "2023-01-01");
+        TestEntity entity2 = new TestEntity(2L, "Jane", "jane@example.com", "2023-01-02");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        Integer result1 = testBaseDao.publicDelete(entity1);
+        Integer result2 = testBaseDao.publicDelete(entity2);
+
+        // Assert
+        assertEquals(1, result1, "First delete should succeed");
+        assertEquals(1, result2, "Second delete should succeed");
+        verify(jdbcTemplate, times(2)).update(anyString(), anyMap());
+        
+        // Verify correct SQL was called
+        verify(jdbcTemplate, times(2)).update(
+            eq("DELETE FROM users WHERE user_id = :user_id"),
+            anyMap()
+        );
+    }
 
     @Test
     void testTableNameUsage() {
@@ -426,13 +683,43 @@ public class BaseDaoTest {
     }
 
     @Test
-    void testUpdate_SQLError() {
+    void testUpdateByPrimaryKey_SQLError() {
         // Arrange
         TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
         when(jdbcTemplate.update(anyString(), anyMap())).thenThrow(new RuntimeException("SQL Error"));
 
         // Act & Assert
         assertThrows(RuntimeException.class, () -> testBaseDao.publicUpdate(entity));
+        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testUpdateWithWhereClauseAndParams_SQLError() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
+        String whereClause = "user_id = :userId";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("userId", 1L);
+        when(jdbcTemplate.update(anyString(), anyMap())).thenThrow(new RuntimeException("SQL Error"));
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> testBaseDao.publicUpdate(entity, whereClause, whereParams));
+        verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testUpdateWithWhereClauseAndParams_EmptyWhereParams() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John Updated", "john.updated@example.com", "2023-01-01");
+        String whereClause = "user_id = :user_id"; // Uses parameter from entity
+        Map<String, Object> whereParams = new HashMap<>(); // Empty map
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        Integer result = testBaseDao.publicUpdate(entity, whereClause, whereParams);
+
+        // Assert
+        assertEquals(1, result, "Update should work with empty whereParams map");
         verify(jdbcTemplate, times(1)).update(anyString(), anyMap());
     }
 
@@ -474,8 +761,85 @@ public class BaseDaoTest {
                 sql.contains("SET") &&
                 sql.contains("user_name = :user_name") &&
                 sql.contains("user_email = :user_email") &&
-                !sql.contains("created_at = :created_at") // Non-insertable field should not be included
+                !sql.contains("created_at = :created_at") && // Non-insertable field should not be included
+                !sql.contains("user_id = :user_id,")        // Primary key should not be in SET clause
             ),
+            anyMap()
+        );
+    }
+
+    // ========== Integration Tests cho các phương thức update ==========
+
+    @Test
+    void testBothUpdateMethods_SameEntity() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John", "john@example.com", "2023-01-01");
+        String whereClause = "status = :status";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("status", "active");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act - call both update methods
+        Integer result1 = testBaseDao.publicUpdate(entity); // Primary key based
+        Integer result2 = testBaseDao.publicUpdate(entity, whereClause, whereParams); // Custom where
+
+        // Assert
+        assertEquals(1, result1, "Primary key update should succeed");
+        assertEquals(1, result2, "Custom where update should succeed");
+        verify(jdbcTemplate, times(2)).update(anyString(), anyMap());
+    }
+
+    @Test
+    void testUpdateMethodsWithDifferentTableNames() {
+        // Arrange
+        TestBaseDao dao1 = new TestBaseDao(jdbcTemplate, "users");
+        TestBaseDao dao2 = new TestBaseDao(jdbcTemplate, "customers");
+        TestEntity entity = new TestEntity(1L, "John", "john@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act
+        dao1.publicUpdate(entity);
+        dao2.publicUpdate(entity);
+
+        // Assert - verify different table names are used
+        verify(jdbcTemplate).update(
+            argThat(sql -> sql.contains("UPDATE users SET")),
+            anyMap()
+        );
+        verify(jdbcTemplate).update(
+            argThat(sql -> sql.contains("UPDATE customers SET")),
+            anyMap()
+        );
+    }
+
+    @Test
+    void testCompleteWorkflow_InsertThenUpdate() {
+        // Arrange
+        TestEntity entity = new TestEntity(1L, "John", "john@example.com", "2023-01-01");
+        when(jdbcTemplate.update(anyString(), anyMap())).thenReturn(1);
+
+        // Act - simulate complete workflow
+        testBaseDao.publicInsert(entity);           // Insert
+        entity.setName("John Updated");
+        testBaseDao.publicUpdate(entity);           // Update by primary key
+        
+        String whereClause = "status = :status";
+        Map<String, Object> whereParams = new HashMap<>();
+        whereParams.put("status", "active");
+        testBaseDao.publicUpdate(entity, whereClause, whereParams); // Custom update
+
+        // Assert
+        verify(jdbcTemplate, times(3)).update(anyString(), anyMap());
+        
+        // Verify INSERT query
+        verify(jdbcTemplate).update(
+            argThat(sql -> sql.startsWith("INSERT INTO users")),
+            anyMap()
+        );
+        
+        // Verify UPDATE queries
+        verify(jdbcTemplate, times(2)).update(
+            argThat(sql -> sql.startsWith("UPDATE users SET")),
             anyMap()
         );
     }

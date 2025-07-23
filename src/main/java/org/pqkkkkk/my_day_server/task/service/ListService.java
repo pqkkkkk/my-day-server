@@ -1,9 +1,9 @@
 package org.pqkkkkk.my_day_server.task.service;
 
-import org.pqkkkkk.my_day_server.task.entity.List;
+import org.pqkkkkk.my_day_server.task.entity.MyList;
 
 public interface ListService {
-    public List createList(List list);
-    public List updateList(List list);
+    public MyList createList(MyList list);
+    public MyList updateList(MyList list);
     public Integer deleteList(Long id);
 }

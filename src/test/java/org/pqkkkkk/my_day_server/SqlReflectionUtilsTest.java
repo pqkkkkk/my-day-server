@@ -118,7 +118,49 @@ public class SqlReflectionUtilsTest {
         String primaryKey = SqlReflectionUtils.getPrimaryKeyName(emptyEntity);
         assertNull(primaryKey, "Primary key should be null for empty entity");
     }
+    // ========== Tests cho getPrimaryKeyValue() ==========
+    @Test
+    void testGetPrimaryKeyValue_Success() {
+        // Arrange
+        TestEntity entity = new TestEntity(123L, "John", "john@test.com", "2023-01-01", "Description", 30);
+        
+        // Act
+        Object result = SqlReflectionUtils.getPrimaryKeyValue(entity);
+        
+        // Assert
+        assertEquals(123L, result, "Should return primary key value");
+    }
+
+@Test
+void testGetPrimaryKeyValue_NullEntity() {
+    // Act & Assert
+    Object result = SqlReflectionUtils.getPrimaryKeyValue(null);
+    assertNull(result, "Should return null for null entity");
+}
+
+@Test
+void testGetPrimaryKeyValue_NoPrimaryKey() {
+    // Arrange
+    TestEntityNoPrimaryKey entity = new TestEntityNoPrimaryKey("test", "value");
     
+    // Act
+    Object result = SqlReflectionUtils.getPrimaryKeyValue(entity);
+    
+    // Assert
+    assertNull(result, "Should return null when no primary key exists");
+}
+
+@Test
+void testGetPrimaryKeyValue_NullPrimaryKeyValue() {
+    // Arrange
+    TestEntity entity = new TestEntity(null, "John", "john@test.com", "2023-01-01", "Description", 30);
+    
+    // Act
+    Object result = SqlReflectionUtils.getPrimaryKeyValue(entity);
+    
+    // Assert
+    assertNull(result, "Should return null when primary key value is null");
+}
     // ========== Tests cho entityToMap() ==========
     
     @Test

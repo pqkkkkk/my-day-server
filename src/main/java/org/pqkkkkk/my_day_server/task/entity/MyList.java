@@ -1,20 +1,22 @@
 package org.pqkkkkk.my_day_server.task.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import org.pqkkkkk.my_day_server.task.Constants.TaskPriority;
-import org.pqkkkkk.my_day_server.task.Constants.TaskStatus;
+import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
 import org.pqkkkkk.my_day_server.user.entity.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,36 +24,30 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "my_day_task_table")
+@Table(name = "my_day_list_table")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Task {
+public class MyList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long taskId;
+    private Long listId;
 
-    @jakarta.persistence.Column(name = "task_title", nullable = false, length = 100)
-    private String title;
+    @jakarta.persistence.Column(name = "list_title", nullable = false, unique = true, length = 100)
+    private String listTitle;
 
-    @jakarta.persistence.Column(name = "task_description", columnDefinition = "TEXT")
-    private String description;
+    @jakarta.persistence.Column(name = "list_description", columnDefinition = "TEXT")
+    private String listDescription;
 
-    @Min(0)
-    private Integer estimatedTime;
+    @jakarta.persistence.Column(name = "list_category")
+    @Enumerated(EnumType.STRING)
+    private ListCategory listCategory;
 
-    @Min(0)
-    private Integer actualTime;
-
-    private LocalDateTime deadline;
-
-    @jakarta.persistence.Enumerated(EnumType.STRING)
-    private TaskPriority taskPriority;
-
-    @jakarta.persistence.Enumerated(EnumType.STRING)
-    private TaskStatus taskStatus;
+    @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
+    @jakarta.persistence.Column(length = 7)
+    private String color;
 
     @jakarta.persistence.Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -60,10 +56,9 @@ public class Task {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "list_id")
-    private MyList list;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "list")
+    private List<Task> tasks;
 }

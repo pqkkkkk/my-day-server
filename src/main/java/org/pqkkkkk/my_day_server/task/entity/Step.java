@@ -1,26 +1,43 @@
 package org.pqkkkkk.my_day_server.task.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Entity
+@Table(name = "my_day_step_table")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Step {
-    @Column(isPrimaryKey = true, insertable = false, updatable = false, value = "step_id")
-    Long stepId;
-    @Column("step_title")
-    String stepTitle;
-    @Column("completed")
-    boolean completed;
-    Date createdAt;
-    @Column("task_id")
-    int taskId; // Foreign key to Task entity
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long stepId;
+
+    @jakarta.persistence.Column(name = "step_title", nullable = false, length = 100)
+    private String title;
+
+    @Builder.Default
+    private Boolean completed = false;
+
+    @jakarta.persistence.Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "task_id")
+    private Task task;
 }
