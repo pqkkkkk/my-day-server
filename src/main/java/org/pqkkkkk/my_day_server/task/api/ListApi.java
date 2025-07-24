@@ -34,11 +34,13 @@ public class ListApi {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MyList>> createList(@Valid @RequestBody CreateListRequest request) {
+    public ResponseEntity<ApiResponse<MyListDTO>> createList(@Valid @RequestBody CreateListRequest request) {
         MyList list = CreateListRequest.toEntity(request);
 
         MyList createdList = listService.createList(list);
-        ApiResponse<MyList> response = new ApiResponse<>(createdList, true,
+        MyListDTO listDTO = MyListDTO.from(createdList);
+
+        ApiResponse<MyListDTO> response = new ApiResponse<>(listDTO, true,
                                 HttpStatus.CREATED.value(),
                                 "List created successfully");
 

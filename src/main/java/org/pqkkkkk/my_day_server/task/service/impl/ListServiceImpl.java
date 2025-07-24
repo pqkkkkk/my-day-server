@@ -5,6 +5,8 @@ import org.pqkkkkk.my_day_server.task.entity.MyList;
 import org.pqkkkkk.my_day_server.task.service.ListService;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class ListServiceImpl implements ListService {
     private final ListCommandDao listCommandDao;
@@ -13,6 +15,7 @@ public class ListServiceImpl implements ListService {
         this.listCommandDao = listCommandDao;
     }
     @Override
+    @Transactional
     public MyList createList(MyList list) {
         return listCommandDao.addList(list);
     }

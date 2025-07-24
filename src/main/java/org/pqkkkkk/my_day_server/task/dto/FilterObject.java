@@ -1,6 +1,7 @@
 package org.pqkkkkk.my_day_server.task.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
@@ -25,21 +26,20 @@ public class FilterObject {
         @Min(value = 1, message = "Page size must be greater than or equal to 1")
         Integer pageSize,
 
-        @Pattern(regexp = "^(id|title|createdAt)$", message = "Invalid sortBy value")
-        Optional<String> sortBy,
+        @Pattern(regexp = "^(listId|listTitle|createdAt)$", message = "Invalid sortBy value")
+        String sortBy,
 
-        Optional<SortDirection> sortDirection,
+        SortDirection sortDirection,
 
         @Size(min = 1, max = 100, message = "List title must be between 1 and 100 characters")
-        Optional<String> listTitle,
+        String listTitle,
 
-        Optional<ListCategory> listCategory,
+        ListCategory listCategory,
 
         @PastOrPresent(message = "Created At From date must be in the past or present")
-        Optional<LocalDate> createdAtFrom,
+        LocalDateTime createdAtFrom,
 
-        @Future(message = "Created At To date must be in the future")
-        Optional<LocalDate> createdAtTo
+        LocalDateTime createdAtTo
     ) {
         public ListFilterObject{
             currentPage = currentPage != null ? currentPage : 1;

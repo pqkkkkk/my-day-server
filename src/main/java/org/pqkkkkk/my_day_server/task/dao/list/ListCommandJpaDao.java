@@ -25,9 +25,9 @@ public class ListCommandJpaDao implements ListCommandDao {
 
     @Override
     public Integer deleteList(Long listId) {
-        listRepository.deleteById(listId);
-        
-        return 1;
+        int deleteCount = listRepository.deleteByListId(listId);
+
+        return deleteCount;
     }
 
 }

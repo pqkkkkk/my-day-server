@@ -6,6 +6,7 @@ import org.pqkkkkk.my_day_server.task.dto.FilterObject.ListFilterObject;
 import org.pqkkkkk.my_day_server.task.entity.MyList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,8 @@ public interface ListRepository extends JpaRepository<MyList, Long> {
         FROM MyList l LEFT JOIN l.tasks t
         WHERE (:#{#filterObject.listCategory} IS NULL OR l.listCategory = :#{#filterObject.listCategory})
             AND (:#{#filterObject.listTitle} IS NULL OR LOWER(l.listTitle) LIKE LOWER(CONCAT('%', :#{#filterObject.listTitle}, '%')))
+            AND (l.createdAt >= COALESCE(:#{#filterObject.createdAtFrom}, l.createdAt))
+AND (l.createdAt <= COALESCE(:#{#filterObject.createdAtTo}, l.createdAt))
         GROUP BY l.listId, l.listTitle, l.listDescription, l.listCategory, l.color,
             l.createdAt, l.updatedAt, l.user.username
         """,
@@ -30,10 +33,16 @@ public interface ListRepository extends JpaRepository<MyList, Long> {
             SELECT COUNT(DISTINCT l.listId)
             FROM MyList l
             WHERE (:#{#filterObject.listCategory} IS NULL OR l.listCategory = :#{#filterObject.listCategory})
-                AND (:#{#filterObject.listTitle} IS NULL OR LOWER(l.listTitle) LIKE LOWER(CONCAT('%', :#{#filterObject.listTitle}, '%')))    
+                    AND (:#{#filterObject.listTitle} IS NULL OR LOWER(l.listTitle) LIKE LOWER(CONCAT('%', :#{#filterObject.listTitle}, '%')))
+                    AND (l.createdAt >= COALESCE(:#{#filterObject.createdAtFrom}, l.createdAt))
+                    AND (l.createdAt <= COALESCE(:#{#filterObject.createdAtTo}, l.createdAt))
             """
     )
 
     public Page<MyListDTO> fetchListDTOs(ListFilterObject filterObject,
                                     Pageable pageable);
+
+    @Modifying
+    @Query("DELETE FROM MyList l WHERE l.listId = :listId")
+    public int deleteByListId(Long listId);
 }

@@ -3,6 +3,8 @@ package org.pqkkkkk.my_day_server.task.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
 import org.pqkkkkk.my_day_server.user.entity.User;
 
@@ -49,10 +51,12 @@ public class MyList {
     @jakarta.persistence.Column(length = 7)
     private String color;
 
-    @jakarta.persistence.Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    @jakarta.persistence.Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @jakarta.persistence.Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @jakarta.persistence.Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @ManyToOne
