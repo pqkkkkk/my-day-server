@@ -2,14 +2,12 @@ package org.pqkkkkk.my_day_server.task.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
 import org.pqkkkkk.my_day_server.task.Constants.SortDirection;
 import org.pqkkkkk.my_day_server.task.Constants.TaskPriority;
 import org.pqkkkkk.my_day_server.task.Constants.TaskStatus;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -56,29 +54,32 @@ public class FilterObject {
         @Min(value = 1, message = "Page size must be greater than or equal to 1")
         Integer pageSize,
 
-        @Pattern(regexp = "^(id|title|createdAt|deadline)$", message = "Invalid sortBy value")
-        Optional<String> sortBy,
+        @Pattern(regexp = "^(taskId|taskTitle|createdAt|deadline)$", message = "Invalid sortBy value")
+        String sortBy,
 
-        Optional<SortDirection> sortDirection,
+        SortDirection sortDirection,
 
         @Min(value = 1, message = "List ID must be greater than or equal to 1")
-        Optional<Long> listId,
+        Long listId,
+
+        String username,
         @Size(min = 1, max = 100, message = "Task title must be between 1 and 100 characters")
-        Optional<String> taskTitle,
+        String taskTitle,
 
-        Optional<TaskStatus> taskStatus,
+        TaskStatus taskStatus,
 
-        Optional<TaskPriority> taskPriority,
+        TaskPriority taskPriority,
 
         @PastOrPresent(message = "Created At From date must be in the past or present")
-        Optional<LocalDate> createdAtFrom,
+        LocalDate createdAtFrom,
 
-        @Future(message = "Created At To date must be in the future")
-        Optional<LocalDate> createdAtTo
+        LocalDate createdAtTo
     ) {
         public TaskFilterObject{
             currentPage = currentPage != null ? currentPage : 1;
             pageSize = pageSize != null ? pageSize : 10;
+            sortBy = sortBy != null ? sortBy : "taskId";
+            sortDirection = sortDirection != null ? sortDirection : SortDirection.DESC;
         }
     }
 

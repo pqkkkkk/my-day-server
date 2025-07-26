@@ -1,8 +1,7 @@
 package org.pqkkkkk.my_day_server.task.dto;
 
-import java.time.LocalDate;
-
 import org.pqkkkkk.my_day_server.task.entity.MyList;
+import org.pqkkkkk.my_day_server.task.entity.Task;
 
 public class DTO {
     public record MyListDTO(
@@ -66,9 +65,9 @@ public class DTO {
         String taskDecription,
         Integer estimatedTime,
         Integer actualTime,
-        LocalDate deadline,
-        LocalDate createdAt,
-        LocalDate updatedAt,
+        String deadline,
+        String createdAt,
+        String updatedAt,
         String taskPriority,
         String taskStatus,
         Long listId,
@@ -83,9 +82,9 @@ public class DTO {
             String taskDecription,
             Integer estimatedTime,
             Integer actualTime,
-            LocalDate deadline,
-            LocalDate createdAt,
-            LocalDate updatedAt,
+            String deadline,
+            String createdAt,
+            String updatedAt,
             String taskPriority,
             String taskStatus,
             Long listId,
@@ -109,6 +108,25 @@ public class DTO {
                 totalCompletedSteps,
                 totalSteps,
                 totalSteps == 0 ? 0 : (totalCompletedSteps * 100) / totalSteps
+            );
+        }
+        public static TaskDTO from(Task task){
+            return new TaskDTO(
+                task.getTaskId(),
+                task.getTaskTitle(),
+                task.getTaskDescription(),
+                task.getEstimatedTime(),
+                task.getActualTime(),
+                task.getDeadline() != null ? task.getDeadline().toString() : null,
+                task.getCreatedAt() != null ? task.getCreatedAt().toString() : null,
+                task.getUpdatedAt() != null ? task.getUpdatedAt().toString() : null,
+                task.getTaskPriority() != null ? task.getTaskPriority().name() : null,
+                task.getTaskStatus() != null ? task.getTaskStatus().name() : null,
+                task.getList() != null ? task.getList().getListId() : null,
+                task.getUser() != null ? task.getUser().getUsername() : null,
+                0,
+                0,
+                0
             );
         }
     }
