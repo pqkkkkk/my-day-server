@@ -1,6 +1,7 @@
 package org.pqkkkkk.my_day_server.task.dto;
 
 import org.pqkkkkk.my_day_server.task.entity.MyList;
+import org.pqkkkkk.my_day_server.task.entity.Step;
 import org.pqkkkkk.my_day_server.task.entity.Task;
 
 public class DTO {
@@ -127,6 +128,24 @@ public class DTO {
                 0,
                 0,
                 0
+            );
+        }
+    }
+
+    public record StepDTO(
+        Long stepId,
+        String stepTitle,
+        String createdAt,
+        boolean completed,
+        String taskId
+    ) {
+        public static StepDTO fromEntity(Step step) {
+            return new StepDTO(
+                step.getStepId(),
+                step.getStepTitle(),
+                step.getCreatedAt() != null ? step.getCreatedAt().toString() : null,
+                step.getCompleted(),
+                step.getTask() != null ? step.getTask().getTaskId().toString() : null
             );
         }
     }

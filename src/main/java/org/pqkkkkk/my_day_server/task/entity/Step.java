@@ -2,9 +2,11 @@ package org.pqkkkkk.my_day_server.task.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -28,13 +30,14 @@ public class Step {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long stepId;
 
-    @jakarta.persistence.Column(name = "step_title", nullable = false, length = 100)
-    private String title;
+    @Column(name = "step_title", nullable = false, length = 100)
+    private String stepTitle;
 
     @Builder.Default
     private Boolean completed = false;
 
-    @jakarta.persistence.Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @ManyToOne

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
 import org.pqkkkkk.my_day_server.task.Constants.TaskPriority;
 import org.pqkkkkk.my_day_server.task.entity.MyList;
+import org.pqkkkkk.my_day_server.task.entity.Step;
 import org.pqkkkkk.my_day_server.task.entity.Task;
 import org.pqkkkkk.my_day_server.user.entity.User;
 
@@ -42,6 +43,7 @@ public class Request {
                 .build();
         }
     }
+
     public record CreateTaskRequest(
         @NotBlank
         String taskTitle,
@@ -82,6 +84,17 @@ public class Request {
             }
 
             return task;
+        }
+    }
+
+    public record CreateStepRequest(
+        @NotBlank
+        String stepTitle
+    ){
+        public static Step toEntity(CreateStepRequest request) {
+            return Step.builder()
+                .stepTitle(request.stepTitle)
+                .build();
         }
     }
 }
