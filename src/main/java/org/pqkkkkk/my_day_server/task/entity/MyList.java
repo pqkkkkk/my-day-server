@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.pqkkkkk.my_day_server.task.Constants.ListCategory;
 import org.pqkkkkk.my_day_server.user.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -63,6 +64,6 @@ public class MyList {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "list")
+    @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 }

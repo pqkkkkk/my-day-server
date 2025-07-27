@@ -51,7 +51,9 @@ public class ListApi {
                                      @Valid @RequestBody MyList list) {
         list.setListId(id);
         MyList updatedList = listService.updateList(list);
-        ApiResponse<MyList> response = new ApiResponse<>(updatedList, true,
+
+        ApiResponse<MyList> response = new ApiResponse<>(updatedList,
+                                true,
                                 HttpStatus.OK.value(),
                                 "List updated successfully");
 

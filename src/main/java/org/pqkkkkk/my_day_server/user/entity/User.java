@@ -1,9 +1,15 @@
 package org.pqkkkkk.my_day_server.user.entity;
 
-import org.pqkkkkk.my_day_server.task.entity.Column;
+import java.util.List;
 
+import org.pqkkkkk.my_day_server.task.entity.Column;
+import org.pqkkkkk.my_day_server.task.entity.MyList;
+import org.pqkkkkk.my_day_server.task.entity.Task;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -42,4 +48,10 @@ public class User {
     @jakarta.persistence.Column(name = "user_full_name", nullable = false, length = 100)
     @NotBlank
     String userFullName;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<MyList> lists;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Task> tasks;
 }
