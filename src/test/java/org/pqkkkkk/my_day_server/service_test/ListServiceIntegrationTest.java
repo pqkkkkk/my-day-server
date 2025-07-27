@@ -3,12 +3,14 @@ package org.pqkkkkk.my_day_server.service_test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
+import org.pqkkkkk.my_day_server.TestSecurityConfig;
 import org.pqkkkkk.my_day_server.data_builder.UserTestDataBuilder;
 import org.pqkkkkk.my_day_server.task.entity.MyList;
 import org.pqkkkkk.my_day_server.task.service.ListService;
 import org.pqkkkkk.my_day_server.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import jakarta.persistence.EntityManager;
@@ -17,7 +19,8 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @Transactional
-@ActiveProfiles("test")  // Chỉ áp dụng cho class này
+@Import(TestSecurityConfig.class) // Import security configuration if needed
+@ActiveProfiles("test")  // Only applies to this class
 public class ListServiceIntegrationTest {
     @Autowired
     private ListService listService;
