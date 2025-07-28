@@ -7,6 +7,7 @@ import org.pqkkkkk.my_day_server.task.dto.FilterObject.TaskFilterObject;
 import org.pqkkkkk.my_day_server.task.entity.Task;
 import org.pqkkkkk.my_day_server.task.service.TaskAggregationService;
 import org.pqkkkkk.my_day_server.task.service.TaskService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class TaskApi {
     private final TaskService taskService;
     private final TaskAggregationService taskAggregationService;
 
-    public TaskApi(TaskService taskService, TaskAggregationService taskAggregationService) {
+    public TaskApi(TaskService taskService,@Qualifier("taskAggregationServiceImplV1")  TaskAggregationService taskAggregationService) {
         this.taskService = taskService;
         this.taskAggregationService = taskAggregationService;
     }

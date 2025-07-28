@@ -1,5 +1,7 @@
 package org.pqkkkkk.my_day_server.task.dto;
 
+import java.util.List;
+
 import org.pqkkkkk.my_day_server.task.entity.MyList;
 import org.pqkkkkk.my_day_server.task.entity.Step;
 import org.pqkkkkk.my_day_server.task.entity.Task;
@@ -75,7 +77,8 @@ public class DTO {
         String userId,
         Integer totalCompletedSteps,
         Integer totalSteps,
-        Integer progressPercentage
+        Integer progressPercentage,
+        List<StepDTO> steps
     ) {
         public TaskDTO(
             Long taskId,
@@ -108,7 +111,8 @@ public class DTO {
                 userId,
                 totalCompletedSteps,
                 totalSteps,
-                totalSteps == 0 ? 0 : (totalCompletedSteps * 100) / totalSteps
+                totalSteps == 0 ? 0 : (totalCompletedSteps * 100) / totalSteps,
+                List.of() // Default to empty list for steps
             );
         }
         public static TaskDTO from(Task task){
@@ -127,7 +131,28 @@ public class DTO {
                 task.getUser() != null ? task.getUser().getUsername() : null,
                 0,
                 0,
-                0
+                0,
+                List.of() // Default to empty list for steps
+            );
+        }
+        public static TaskDTO fromOldAndSteps(TaskDTO oldTaskDTO, List<StepDTO> steps) {
+            return new TaskDTO(
+                oldTaskDTO.taskId(),
+                oldTaskDTO.taskTitle(),
+                oldTaskDTO.taskDecription(),
+                oldTaskDTO.estimatedTime(),
+                oldTaskDTO.actualTime(),
+                oldTaskDTO.deadline(),
+                oldTaskDTO.createdAt(),
+                oldTaskDTO.updatedAt(),
+                oldTaskDTO.taskPriority(),
+                oldTaskDTO.taskStatus(),
+                oldTaskDTO.listId(),
+                oldTaskDTO.userId(),
+                Long.valueOf(steps.stream().filter(StepDTO::completed).count()).intValue(), // Count completed steps
+                steps.size(), // Total steps
+                steps.isEmpty() ? 0 : (int) ((steps.stream().filter(StepDTO::completed).count() * 100) / steps.size()), // Progress percentage
+                steps
             );
         }
     }
