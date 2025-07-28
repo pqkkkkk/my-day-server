@@ -2,6 +2,7 @@ package org.pqkkkkk.my_day_server.task.api;
 
 import org.pqkkkkk.my_day_server.common.ApiResponse;
 import org.pqkkkkk.my_day_server.task.api.Request.CreateStepRequest;
+import org.pqkkkkk.my_day_server.task.api.Request.UpdateStepRequest;
 import org.pqkkkkk.my_day_server.task.dto.DTO.StepDTO;
 import org.pqkkkkk.my_day_server.task.entity.Step;
 import org.pqkkkkk.my_day_server.task.service.StepService;
@@ -11,8 +12,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/step")
@@ -24,7 +28,7 @@ public class StepApi {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<StepDTO>> createStep(CreateStepRequest request){
+    public ResponseEntity<ApiResponse<StepDTO>> createStep(@Valid @RequestBody CreateStepRequest request){
         Step step = CreateStepRequest.toEntity(request);
 
         Step createdStep = stepService.createStep(step);
@@ -36,8 +40,9 @@ public class StepApi {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<StepDTO>> updateStep(@PathVariable("id") Long stepId, CreateStepRequest request){
-        Step step = CreateStepRequest.toEntity(request);
+    public ResponseEntity<ApiResponse<StepDTO>> updateStep(@PathVariable("id") Long stepId,
+                                                        @Valid @RequestBody UpdateStepRequest request){
+        Step step = UpdateStepRequest.toEntity(request);
         step.setStepId(stepId);
 
         Step updatedStep = stepService.updateStep(step);

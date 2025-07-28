@@ -10,6 +10,7 @@ import org.pqkkkkk.my_day_server.task.entity.Task;
 import org.pqkkkkk.my_day_server.user.entity.User;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -89,11 +90,34 @@ public class Request {
 
     public record CreateStepRequest(
         @NotBlank
-        String stepTitle
+        String stepTitle,
+        @NotNull
+        Long taskId
     ){
         public static Step toEntity(CreateStepRequest request) {
             return Step.builder()
                 .stepTitle(request.stepTitle)
+                .task(Task.builder().taskId(request.taskId).build())
+                .build();
+        }
+    }
+    public record UpdateStepRequest(
+        @NotBlank
+        String stepTitle,
+        Boolean completed,
+        @NotNull
+        Long taskId
+    ) {
+        public UpdateStepRequest {
+            if (completed == null) {
+                completed = false; // Default value for completed
+            }
+        }
+        public static Step toEntity(UpdateStepRequest request) {
+            return Step.builder()
+                .stepTitle(request.stepTitle)
+                .completed(request.completed)
+                .task(Task.builder().taskId(request.taskId).build())
                 .build();
         }
     }
