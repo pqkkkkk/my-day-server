@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("taskAggregationServiceImplV1")
 public class TaskAggregationServiceImpl implements TaskAggregationService {
     private final TaskQueryDao taskQueryDao;
 

@@ -59,7 +59,6 @@ public class FilterObject {
 
         SortDirection sortDirection,
 
-        @Min(value = 1, message = "List ID must be greater than or equal to 1")
         Long listId,
 
         String username,

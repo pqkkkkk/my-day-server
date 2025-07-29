@@ -14,6 +14,14 @@ public class ListDataBuilder {
                 .user(UserTestDataBuilder.createTestUser())
                 .build();
     }
+    public static MyList createTestListWithoutUser() {
+        return MyList.builder()
+                .listTitle("Test List")
+                .listDescription("Test Description")
+                .listCategory(ListCategory.PERSONAL)
+                .color("#FF0000")
+                .build();
+    }
     public static MyList createTestListWithId() {
         return MyList.builder()
                 .listId(1L)
