@@ -9,5 +9,4 @@ public class MyDayServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MyDayServerApplication.class, args);
 	}
-
 }

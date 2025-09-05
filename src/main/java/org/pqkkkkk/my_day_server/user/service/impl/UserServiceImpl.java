@@ -4,13 +4,14 @@ import org.pqkkkkk.my_day_server.user.dao.UserDao;
 import org.pqkkkkk.my_day_server.user.entity.User;
 import org.pqkkkkk.my_day_server.user.exception.UserNotFoundException;
 import org.pqkkkkk.my_day_server.user.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
 
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(@Qualifier("userJpaDao") UserDao userDao) {
         this.userDao = userDao;
     }
 

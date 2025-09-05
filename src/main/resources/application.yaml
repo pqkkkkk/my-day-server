@@ -2,10 +2,13 @@ spring:
     application:
         name: my-day-server
     datasource:
-        url: jdbc:postgresql://localhost:5432/my_day_db
-        username: postgres
-        password: pqkiet854
+        url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/my_day_db}
+        username: ${DATABASE_USERNAME:postgres}
+        password: ${DATABASE_PASSWORD:pqkiet854A@}
         driver-class-name: org.postgresql.Driver
+        hikari:
+            maximum-pool-size: 30
+            minimum-idle: 10
     jpa:
         hibernate.ddl-auto: update
         show-sql: true
@@ -14,7 +17,12 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
     profiles:
         active: default
-
+server:
+    port: 8080
+    tomcat:
+        threads:
+            max: 200
+            min-spare: 30
 ---
 spring:
     config:
@@ -40,7 +48,16 @@ logging:
     level:
         root: INFO
         '[org.springframework.security]': DEBUG
-        
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,prometheus
+    endpoint:
+        prometheus:
+            access: READ_ONLY
+
 jwt:
     signer-key: 1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij
     expiration: 900

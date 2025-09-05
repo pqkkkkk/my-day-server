@@ -3,6 +3,7 @@ package org.pqkkkkk.my_day_server.user.service.impl;
 
 import org.pqkkkkk.my_day_server.user.dto.BusinessResult.RefreshTokenResult;
 import org.pqkkkkk.my_day_server.user.dto.BusinessResult.SignInResult;
+import org.pqkkkkk.my_day_server.user.dto.DTO.UserDTO;
 import org.pqkkkkk.my_day_server.user.entity.User;
 import org.pqkkkkk.my_day_server.user.exception.ExistedUserException;
 import org.pqkkkkk.my_day_server.user.exception.UserNotFoundException;
@@ -49,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = jwtUtils.generateRefreshToken(user);
         user.setUserPassword(null); // Clear password before returning user object
         
-        return new SignInResult(accessToken, refreshToken, user, true);
+        return new SignInResult(accessToken, refreshToken, UserDTO.fromEntity(user), true);
     }
 
     @Override
