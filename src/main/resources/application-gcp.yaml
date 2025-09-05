@@ -3,6 +3,7 @@ spring:
         name: my-day-server
     datasource:
         url: jdbc:postgresql:///${DATABASE_NAME}?cloudSqlInstance=${CLOUD_SQL_INSTANCE}&socketFactory=com.google.cloud.sql.postgres.SocketFactory
+        username: ${DATABASE_USERNAME:postgres}
         password: ${DATABASE_PASSWORD:pqkiet854A@}
         driver-class-name: org.postgresql.Driver
         hikari:
