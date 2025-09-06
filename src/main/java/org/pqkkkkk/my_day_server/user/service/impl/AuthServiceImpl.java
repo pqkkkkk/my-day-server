@@ -64,9 +64,9 @@ public class AuthServiceImpl implements AuthService {
         return prepareCreatedUser(createdUser);
     }
     private void checkUserExists(String username){
-        User existingUser = userService.getUserByUsername(username);
-
         try{
+            User existingUser = userService.getUserByUsername(username);
+            
             if(existingUser != null){
                 throw new ExistedUserException("User already exists with username: " + username);
             }

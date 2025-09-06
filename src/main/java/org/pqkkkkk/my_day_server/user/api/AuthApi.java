@@ -3,8 +3,10 @@ package org.pqkkkkk.my_day_server.user.api;
 import org.pqkkkkk.my_day_server.common.ApiResponse;
 import org.pqkkkkk.my_day_server.user.api.Request.RefreshTokenRequest;
 import org.pqkkkkk.my_day_server.user.api.Request.SignInRequest;
+import org.pqkkkkk.my_day_server.user.api.Request.SignUpRequest;
 import org.pqkkkkk.my_day_server.user.dto.BusinessResult.RefreshTokenResult;
 import org.pqkkkkk.my_day_server.user.dto.BusinessResult.SignInResult;
+import org.pqkkkkk.my_day_server.user.dto.DTO.UserDTO;
 import org.pqkkkkk.my_day_server.user.entity.User;
 import org.pqkkkkk.my_day_server.user.service.AuthService;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +36,13 @@ public class AuthApi {
         return ResponseEntity.ok(response);
     }
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<User>> signUp(@Valid @RequestBody User user) {
-        User createdUser = authService.signUp(user);
-        ApiResponse<User> response = new ApiResponse<>(createdUser, true, HttpStatus.CREATED.value(), "User created successfully");
+    public ResponseEntity<ApiResponse<UserDTO>> signUp(@Valid @RequestBody SignUpRequest user) {
+        User createdUser = authService.signUp(user.toEntity());
+
+        UserDTO userDTO = UserDTO.fromEntity(createdUser);
+
+        ApiResponse<UserDTO> response = new ApiResponse<>(userDTO, true, HttpStatus.CREATED.value(), "User created successfully");
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @PostMapping("/refresh-token")
